@@ -1,0 +1,39 @@
+{
+  "name": "facilator",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/server.ts",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "dev": "nodemon --exec tsx src/server.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "x402",
+    "sei",
+    "blockchain",
+    "payments",
+    "invoices"
+  ],
+  "author": "",
+  "license": "MIT",
+  "description": "X402Invoicer API - HTTP-Native Invoice Payments on Sei",
+  "dependencies": {
+    "@types/form-data": "^2.5.2",
+    "@types/node": "^24.3.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "kaia-x402express": "^0.4.5",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "nodemon": "^3.0.1",
+    "tsx": "^4.20.4",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
