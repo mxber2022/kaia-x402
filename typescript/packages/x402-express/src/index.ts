@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Address, getAddress } from "viem";
-import { exact } from "x402/schemes";
+import { exact } from "kaia-x402/schemes";
 import {
   computeRoutePatterns,
   findMatchingPaymentRequirements,
@@ -8,7 +8,7 @@ import {
   getPaywallHtml,
   processPriceToAtomicAmount,
   toJsonSafe,
-} from "x402/shared";
+} from "kaia-x402/shared";
 import {
   FacilitatorConfig,
   moneySchema,
@@ -18,8 +18,8 @@ import {
   Resource,
   RoutesConfig,
   settleResponseHeader,
-} from "x402/types";
-import { useFacilitator } from "x402/verify";
+} from "kaia-x402/types";
+import { useFacilitator } from "kaia-x402/verify";
 
 /**
  * Creates a payment middleware factory for Express
@@ -267,4 +267,4 @@ export type {
   Resource,
   RouteConfig,
   RoutesConfig,
-} from "x402/types";
+} from "kaia-x402/types";
