@@ -10,7 +10,7 @@ import type {
   PublicClient,
   LocalAccount,
 } from "viem";
-import { baseSepolia, avalancheFuji, base, sei, seiTestnet } from "viem/chains";
+import { baseSepolia, avalancheFuji, base, sei, seiTestnet, kaia, kairos } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { Hex } from "viem";
 
@@ -26,7 +26,7 @@ export type SignerWallet<
   RpcSchema,
   PublicActions<transport, chain, account> & WalletActions<chain, account>
 >;
-
+ 
 export type ConnectedClient<
   transport extends Transport = Transport,
   chain extends Chain | undefined = Chain,
@@ -185,6 +185,10 @@ function getChainFromNetwork(network: string | undefined): Chain {
       return sei;
     case "sei-testnet":
       return seiTestnet;
+    case "kaia":
+      return kaia;
+    case "kairos":
+      return kairos;
     default:
       throw new Error(`Unsupported network: ${network}`);
   }
