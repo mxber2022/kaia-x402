@@ -10,6 +10,7 @@ const baseConfig = {
     "verify/index": "src/verify/index.ts",
     "facilitator/index": "src/facilitator/index.ts",
     "types/index": "src/types/index.ts",
+    "paywall/template": "src/paywall/gen/template.ts",
   },
   dts: {
     resolve: true,

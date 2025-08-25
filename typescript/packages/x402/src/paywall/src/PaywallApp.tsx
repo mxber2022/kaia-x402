@@ -27,6 +27,7 @@ import { selectPaymentRequirements } from "../../client";
 import { exact } from "../../schemes";
 import { getUSDCBalance } from "../../shared/evm";
 import { EvmNetworkToChainId, Network } from "../../types/shared";
+import { config } from "../../types/shared/evm/config";
 
 import { Spinner } from "./Spinner";
 import { useOnrampSessionToken } from "./useOnrampSessionToken";
@@ -89,6 +90,18 @@ function getChainDisplayName(network: Network): string {
 }
 
 /**
+ * Gets the token name for the given network
+ */
+function getTokenName(network: Network): string {
+  const chainId = EvmNetworkToChainId.get(network);
+  if (!chainId) {
+    return "USDC"; // fallback
+  }
+  const chainConfig = config[chainId.toString()];
+  return chainConfig?.usdcName || "USDC"; // fallback to USDC if not found
+}
+
+/**
  * Main Paywall App Component
  *
  * @returns The PaywallApp component
@@ -120,6 +133,7 @@ export function PaywallApp() {
 
   const paymentChain = getChainFromNetwork(network);
   const chainName = getChainDisplayName(network);
+  const tokenName = getTokenName(network);
   
   // Show onramp only for mainnet networks (not testnets) and when session token endpoint is available
   const isMainnet = !network.includes("testnet") && !network.includes("sepolia");
@@ -218,11 +232,11 @@ export function PaywallApp() {
     setIsPaying(true);
 
     try {
-      setStatus("Checking USDC balance...");
+      setStatus(`Checking ${tokenName} balance...`);
       const balance = await getUSDCBalance(publicClient, address);
 
       if (balance === 0n) {
-        throw new Error(`Insufficient balance. Make sure you have USDC on ${chainName}`);
+        throw new Error(`Insufficient balance. Make sure you have ${tokenName} on ${chainName}`);
       }
 
       setStatus("Creating payment signature...");
@@ -303,11 +317,11 @@ export function PaywallApp() {
         <h1 className="title">Payment Required</h1>
         <p>
           {selectedPaymentRequirements?.description && `${selectedPaymentRequirements.description}.`} To access this
-          content, please pay ${amount} {chainName} USDC.
+          content, please pay ${amount} {chainName} {tokenName}.
         </p>
         {network.includes("testnet") && (
           <p className="instructions">
-            Need {chainName} USDC?{" "}
+            Need {chainName} {tokenName}?{" "}
             <a href="https://faucet.circle.com/" target="_blank" rel="noopener noreferrer">
               Get some <u>here</u>.
             </a>
@@ -339,14 +353,14 @@ export function PaywallApp() {
                 <span className="payment-value">
                   <button className="balance-button" onClick={() => setHideBalance(prev => !prev)}>
                     {formattedUsdcBalance && !hideBalance
-                      ? `$${formattedUsdcBalance} USDC`
-                      : "••••• USDC"}
+                      ? `$${formattedUsdcBalance} ${tokenName}`
+                      : `••••• ${tokenName}`}
                   </button>
                 </span>
               </div>
               <div className="payment-row">
                 <span className="payment-label">Amount:</span>
-                <span className="payment-value">${amount} USDC</span>
+                <span className="payment-value">${amount} {tokenName}</span>
               </div>
               <div className="payment-row">
                 <span className="payment-label">Network:</span>
@@ -359,7 +373,7 @@ export function PaywallApp() {
                 {showOnramp && (
                   <FundButton
                     fundingUrl={onrampBuyUrl}
-                    text="Get more USDC"
+                    text={`Get more ${tokenName}`}
                     hideIcon
                     className="button button-positive"
                   />
