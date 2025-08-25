@@ -1,6 +1,6 @@
 {
   "name": "kaia-x402express",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/index.d.ts",
@@ -18,7 +18,10 @@
   "keywords": [],
   "license": "Apache-2.0",
   "author": "Coinbase Inc.",
-  "repository": "https://github.com/mxber2022/kaia-x402",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mxber2022/kaia-x402.git"
+  },
   "description": "x402 Payment Protocol",
   "devDependencies": {
     "@eslint/js": "^9.24.0",

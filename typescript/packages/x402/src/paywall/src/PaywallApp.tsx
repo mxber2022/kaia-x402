@@ -10,16 +10,83 @@ import {
 } from "@coinbase/onchainkit/wallet";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPublicClient, formatUnits, http, publicActions } from "viem";
-import { base, baseSepolia } from "viem/chains";
+import { 
+  base, 
+  baseSepolia, 
+  avalanche, 
+  avalancheFuji, 
+  iotex, 
+  sei, 
+  seiTestnet, 
+  kaia, 
+  kairos 
+} from "viem/chains";
 import { useAccount, useSwitchChain, useWalletClient } from "wagmi";
 
 import { selectPaymentRequirements } from "../../client";
 import { exact } from "../../schemes";
 import { getUSDCBalance } from "../../shared/evm";
+import { EvmNetworkToChainId, Network } from "../../types/shared";
 
 import { Spinner } from "./Spinner";
 import { useOnrampSessionToken } from "./useOnrampSessionToken";
 import { ensureValidAmount } from "./utils";
+
+/**
+ * Maps network names to their corresponding viem Chain objects
+ */
+function getChainFromNetwork(network: Network) {
+  switch (network) {
+    case "base":
+      return base;
+    case "base-sepolia":
+      return baseSepolia;
+    case "avalanche":
+      return avalanche;
+    case "avalanche-fuji":
+      return avalancheFuji;
+    case "iotex":
+      return iotex;
+    case "sei":
+      return sei;
+    case "sei-testnet":
+      return seiTestnet;
+    case "kaia":
+      return kaia;
+    case "kairos":
+      return kairos;
+    default:
+      throw new Error(`Unsupported network: ${network}`);
+  }
+}
+
+/**
+ * Gets a human-readable chain name for display
+ */
+function getChainDisplayName(network: Network): string {
+  switch (network) {
+    case "base":
+      return "Base";
+    case "base-sepolia":
+      return "Base Sepolia";
+    case "avalanche":
+      return "Avalanche";
+    case "avalanche-fuji":
+      return "Avalanche Fuji";
+    case "iotex":
+      return "IoTeX";
+    case "sei":
+      return "Sei";
+    case "sei-testnet":
+      return "Sei Testnet";
+    case "kaia":
+      return "Kaia";
+    case "kairos":
+      return "Kairos";
+    default:
+      return network;
+  }
+}
 
 /**
  * Main Paywall App Component
@@ -40,11 +107,23 @@ export function PaywallApp() {
 
   const x402 = window.x402;
   const amount = x402.amount || 0;
-  const testnet = x402.testnet ?? true;
-  const paymentChain = testnet ? baseSepolia : base;
-  const chainName = testnet ? "Base Sepolia" : "Base";
-  const network = testnet ? "base-sepolia" : "base";
-  const showOnramp = Boolean(!testnet && isConnected && x402.sessionTokenEndpoint);
+  
+  // Extract network from payment requirements instead of using hardcoded testnet logic
+  const rawPaymentRequirements = x402?.paymentRequirements;
+  const network: Network = useMemo(() => {
+    if (rawPaymentRequirements && Array.isArray(rawPaymentRequirements) && rawPaymentRequirements.length > 0) {
+      return rawPaymentRequirements[0].network as Network;
+    }
+    // Fallback to base-sepolia for backward compatibility
+    return "base-sepolia";
+  }, [rawPaymentRequirements]);
+
+  const paymentChain = getChainFromNetwork(network);
+  const chainName = getChainDisplayName(network);
+  
+  // Show onramp only for mainnet networks (not testnets) and when session token endpoint is available
+  const isMainnet = !network.includes("testnet") && !network.includes("sepolia");
+  const showOnramp = Boolean(isMainnet && isConnected && x402.sessionTokenEndpoint);
 
   useEffect(() => {
     if (address) {
@@ -58,7 +137,7 @@ export function PaywallApp() {
     transport: http(),
   }).extend(publicActions);
 
-  const paymentRequirements = x402
+  const selectedPaymentRequirements = x402
     ? selectPaymentRequirements([x402.paymentRequirements].flat(), network, "exact")
     : null;
 
@@ -122,7 +201,7 @@ export function PaywallApp() {
   }, [switchChainAsync, paymentChain, isCorrectChain]);
 
   const handlePayment = useCallback(async () => {
-    if (!address || !x402 || !paymentRequirements) {
+    if (!address || !x402 || !selectedPaymentRequirements) {
       return;
     }
 
@@ -147,7 +226,10 @@ export function PaywallApp() {
       }
 
       setStatus("Creating payment signature...");
-      const validPaymentRequirements = ensureValidAmount(paymentRequirements);
+      if (!selectedPaymentRequirements) {
+        throw new Error("No payment requirements found");
+      }
+      const validPaymentRequirements = ensureValidAmount(selectedPaymentRequirements);
       const initialPayment = await exact.evm.createPayment(
         walletClient,
         1,
@@ -202,9 +284,9 @@ export function PaywallApp() {
     } finally {
       setIsPaying(false);
     }
-  }, [address, x402, paymentRequirements, publicClient, paymentChain, handleSwitchChain]);
+  }, [address, x402, selectedPaymentRequirements, publicClient, paymentChain, handleSwitchChain]);
 
-  if (!x402 || !paymentRequirements) {
+  if (!x402 || !selectedPaymentRequirements) {
     return (
       <div className="container">
         <div className="header">
@@ -220,12 +302,12 @@ export function PaywallApp() {
       <div className="header">
         <h1 className="title">Payment Required</h1>
         <p>
-          {paymentRequirements.description && `${paymentRequirements.description}.`} To access this
+          {selectedPaymentRequirements?.description && `${selectedPaymentRequirements.description}.`} To access this
           content, please pay ${amount} {chainName} USDC.
         </p>
-        {testnet && (
+        {network.includes("testnet") && (
           <p className="instructions">
-            Need Base Sepolia USDC?{" "}
+            Need {chainName} USDC?{" "}
             <a href="https://faucet.circle.com/" target="_blank" rel="noopener noreferrer">
               Get some <u>here</u>.
             </a>

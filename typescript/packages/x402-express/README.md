@@ -22,7 +22,7 @@ app.use(paymentMiddleware(
   {
     "/protected-route": {
       price: "$0.10",
-      network: "base-sepolia",
+      network: "base-sepolia", // Can also use: "base", "avalanche", "avalanche-fuji", "iotex", "sei", "sei-testnet", "kaia", "kairos"
       config: {
         description: "Access to premium content",
       }
@@ -39,6 +39,17 @@ app.get("/protected-route",
 
 app.listen(3000);
 ```
+
+## Supported Networks
+
+x402-express supports the following networks:
+
+- **Base**: `"base"` (mainnet), `"base-sepolia"` (testnet)
+- **Avalanche**: `"avalanche"` (mainnet), `"avalanche-fuji"` (testnet)  
+- **IoTeX**: `"iotex"` (mainnet)
+- **Sei**: `"sei"` (mainnet), `"sei-testnet"` (testnet)
+- **Kaia**: `"kaia"` (mainnet)
+- **Kairos**: `"kairos"` (mainnet)
 
 ## Configuration
 
@@ -62,7 +73,7 @@ type RoutesConfig = Record<string, Price | RouteConfig>;
 
 interface RouteConfig {
   price: Price;           // Price in USD or token amount
-  network: Network;       // "base" or "base-sepolia"
+  network: Network;       // Supported networks: "base", "base-sepolia", "avalanche", "avalanche-fuji", "iotex", "sei", "sei-testnet", "kaia", "kairos"
   config?: PaymentMiddlewareConfig;
 }
 ```

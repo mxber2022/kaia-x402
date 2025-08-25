@@ -1,6 +1,6 @@
 {
   "name": "kaia-x402",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/index.d.ts",
@@ -19,7 +19,10 @@
   "keywords": [],
   "license": "Apache-2.0",
   "author": "Kaia",
-  "repository": "https://github.com/mxber2022/kaia-x402",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mxber2022/kaia-x402.git"
+  },
   "description": "x402 Payment Protocol with Kaia chain support",
   "devDependencies": {
     "@coinbase/onchainkit": "^0.38.14",

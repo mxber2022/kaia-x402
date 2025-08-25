@@ -29,13 +29,15 @@ export const config: Record<string, ChainConfig> = {
     usdcAddress: "0xe15fc38f6d8c56af07bbcbe3baf5708a2bf42392",
     usdcName: "USDC",
   },
+  // Kaia
   "8217": {
     usdcAddress: "0xd077a400968890eacc75cdc901f0356c943e4fdb",
-    usdcName: "USDT",
+    usdcName: "USDC",
   },
+  // Kairos
   "1001": {
     usdcAddress: "0xd077a400968890eacc75cdc901f0356c943e4fdb",
-    usdcName: "USDT",
+    usdcName: "USDC",
   },
 };
 

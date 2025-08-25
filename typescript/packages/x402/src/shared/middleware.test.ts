@@ -4,7 +4,7 @@ import {
   findMatchingRoute,
   getDefaultAsset,
   processPriceToAtomicAmount,
-} from "x402/shared";
+} from "kaia-x402/shared";
 import { RoutePattern, RoutesConfig } from "./middleware";
 import { Network } from "./network";
 
