@@ -1,18 +1,18 @@
-# x402-express
+# kaia-x402express
 
-Express middleware integration for the x402 Payment Protocol. This package allows you to easily add paywall functionality to your Express.js applications using the x402 protocol.
+Express middleware integration for the Kaia x402 Payment Protocol. This package allows you to easily add paywall functionality to your Express.js applications using the x402 protocol.
 
 ## Installation
 
 ```bash
-npm install x402-express
+npm install kaia-x402express
 ```
 
 ## Quick Start
 
 ```typescript
 import express from "express";
-import { paymentMiddleware, Network } from "x402-express";
+import { paymentMiddleware, Network } from "kaia-x402express";
 
 const app = express();
 

@@ -1,13 +1,18 @@
-# x402 payments protocol
+# Kaia x402 payments protocol
 
 > "1 line of code to accept digital dollars. No fee, 2 second settlement, $0.001 minimum payment."
 
 ```typescript
 app.use(
   // How much you want to charge, and where you want the funds to land
-  paymentMiddleware("0xYourAddress", { "/your-endpoint": "$0.01" })
+  paymentMiddleware("0xYourAddress", { 
+    "/your-endpoint": {
+      price: "$0.01",
+      network: "kaia"
+    }
+  })
 );
-// That's it! See examples/typescript/servers/express.ts for a complete example. Instruction below for running on base-sepolia.
+// That's it! See examples/typescript/servers/express/ for a complete example.
 ```
 
 ## Philosophy
@@ -19,22 +24,75 @@ It's time for an open, internet-native form of payments. A payment rail that doe
 
 - **Open standard:** the x402 protocol will never force reliance on a single party
 - **HTTP Native:** x402 is meant to seamlessly compliment the existing HTTP request made by traditional web services, it should not mandate additional requests outside the scope of a typical client / server flow.
-- **Chain and token agnostic:** we welcome contributions that add support for new chains, signing standards, or schemes, so long as they meet our acceptance criteria laid out in [CONTRIBUTING.md](https://github.com/coinbase/x402/blob/main/CONTRIBUTING.md)
+- **Chain and token agnostic:** we welcome contributions that add support for new chains, signing standards, or schemes, so long as they meet our acceptance criteria laid out in [CONTRIBUTING.md](https://github.com/coinbase/x402/blob/main/CONTRIBUTING.md). Currently supports Base, Avalanche, IoTeX, Sei, Kaia, and Kairos networks with USDC and USDT tokens.
 - **Trust minimizing:** all payment schemes must not allow for the facilitator or resource server to move funds, other than in accordance with client intentions
 - **Easy to use:** x402 needs to be 10x better than existing ways to pay on the internet. This means abstracting as many details of crypto as possible away from the client and resource server, and into the facilitator. This means the client/server should not need to think about gas, rpc, etc.
 
+## Features
+
+- **Built-in Paywall UI**: Automatic payment interface with wallet connection and balance display
+- **Multi-Network Support**: Works with Base, Avalanche, IoTeX, Sei, Kaia, and Kairos networks
+- **Dynamic Token Display**: Shows correct token names (USDC/USDT) based on network
+- **Gasless Experience**: No gas fees for users, handled by facilitators
+- **Multiple Server Frameworks**: Express, Hono, Next.js middleware available
+- **Multiple Client Libraries**: Fetch and Axios clients available
+
 ## Ecosystem
 
-The x402 ecosystem is growing! Check out our [ecosystem page](https://x402.org/ecosystem) to see projects building with x402, including:
+The Kaia x402 ecosystem is growing! Check out our [ecosystem page](https://x402.org/ecosystem) to see projects building with x402, including:
 
-- Client-side integrations
-- Services and endpoints
-- Ecosystem infrastructure and tooling
-- Learning and community resources
+- **Server Middleware**: Express, Hono, Next.js integrations
+- **Client Libraries**: Fetch, Axios, and CDP SDK clients
+- **Full-Stack Examples**: Complete applications with authentication and pricing
+- **Agent Integrations**: AI agent payment flows
+- **MCP Support**: Model Context Protocol integration
+- **Browser Wallet Examples**: Web3 wallet integration examples
+
+### Examples Directory
+
+Explore the `examples/typescript/` directory for:
+
+- **`servers/`** - Server implementations (Express, Hono, Next.js, Advanced)
+- **`clients/`** - Client libraries (Axios, Fetch, CDP SDK)
+- **`fullstack/`** - Complete applications with auth and pricing
+- **`agent/`** - AI agent payment examples
+- **`mcp/`** - Model Context Protocol integration
 
 Want to add your project to the ecosystem? See our [demo site README](https://github.com/coinbase/x402/tree/main/typescript/site#adding-your-project-to-the-ecosystem) for detailed instructions on how to submit your project.
 
 **Roadmap:** see [ROADMAP.md](https://github.com/coinbase/x402/blob/main/ROADMAP.md)
+
+## Current Packages
+
+The Kaia x402 ecosystem provides several packages for different use cases:
+
+### Core Package
+- **`kaia-x402`** - Core x402 protocol implementation with paywall UI and multi-network support
+
+### Server Middleware
+- **`kaia-x402express`** - Express.js middleware for implementing x402 payments
+- **`kaia-x402-hono`** - Hono.js middleware for implementing x402 payments  
+- **`kaia-x402-next`** - Next.js middleware for implementing x402 payments
+
+### Client Libraries
+- **`kaia-x402-fetch`** - Fetch-based client for making x402 payments
+- **`kaia-x402-axios`** - Axios-based client for making x402 payments
+
+### Supported Networks
+
+Kaia x402 supports the following networks:
+
+| Network | Chain ID | Token | Type |
+|---------|----------|-------|------|
+| **Base** | 8453 | USDC | Mainnet |
+| **Base Sepolia** | 84532 | USDC | Testnet |
+| **Avalanche** | 43114 | USDC | Mainnet |
+| **Avalanche Fuji** | 43113 | USDC | Testnet |
+| **IoTeX** | 4689 | USDC | Mainnet |
+| **Sei** | 1329 | USDC | Mainnet |
+| **Sei Testnet** | 1328 | USDC | Testnet |
+| **Kaia** | 8217 | USDT | Mainnet |
+| **Kairos** | 1001 | USDC | Mainnet |
 
 ## Terms:
 
@@ -254,13 +312,82 @@ Because a scheme is a logical way of moving money, the way a scheme is implement
 
 Clients and facilitators must explicitly support different `(scheme, network)` pairs in order to be able to create proper payloads and verify / settle payments.
 
-## Running example
+## Paywall UI
+
+The Kaia x402 packages include a built-in paywall UI that automatically:
+
+- **Connects Wallets**: Supports MetaMask, WalletConnect, and other Web3 wallets
+- **Shows Balance**: Displays user's token balance for the selected network
+- **Dynamic Token Names**: Shows "USDC" for most networks, "USDT" for Kaia network
+- **Network Switching**: Automatically prompts users to switch to the correct network
+- **Payment Processing**: Handles the entire payment flow with status updates
+- **Onramp Integration**: Optional Coinbase Onramp integration for purchasing tokens
+
+### Paywall Features
+
+- **Automatic Network Detection**: Detects and displays the correct network name
+- **Token Balance Display**: Shows formatted balance with proper token symbols
+- **Error Handling**: Clear error messages for insufficient balance or wrong network
+- **Loading States**: Visual feedback during payment processing
+- **Responsive Design**: Works on desktop and mobile devices
+
+The paywall is automatically generated when using the middleware packages and requires no additional configuration.
+
+## Quick Start
+
+### Installation
+
+```bash
+# Install Express middleware
+npm install kaia-x402express
+
+# Install core package
+npm install kaia-x402
+```
+
+### Basic Usage
+
+```typescript
+import express from 'express';
+import { paymentMiddleware } from 'kaia-x402express';
+
+const app = express();
+
+// Protect routes with x402 payments
+app.use(paymentMiddleware(
+  "0xYourAddress", // Your receiving address
+  {
+    "/api/weather": {
+      price: "$0.01",
+      network: "base-sepolia", // Testnet for development
+      config: {
+        description: "Weather data access"
+      }
+    },
+    "/api/premium": {
+      price: "$0.10", 
+      network: "base", // Mainnet for production
+      config: {
+        description: "Premium content access"
+      }
+    }
+  }
+));
+
+app.get("/api/weather", (req, res) => {
+  res.json({ temperature: "72°F", condition: "Sunny" });
+});
+
+app.listen(3000);
+```
+
+## Running Examples
 
 1. From `examples/typescript` run `pnpm install` and `pnpm build` to ensure all dependent packages and examples are setup.
 
-2. Select a server, i.e. express, and `cd` into that example. Add your server's ethereum address to get paid to into the `.env` file, and then run `pnpm dev` in that directory.
+2. Select a server, i.e. `examples/typescript/servers/express`, and `cd` into that example. Add your server's ethereum address to get paid to into the `.env` file, and then run `pnpm dev` in that directory.
 
-3. Select a client, i.e. axios, and `cd` into that example. Add your private key for the account making payments into the `.env` file, and then run `pnpm dev` in that directory.
+3. Select a client, i.e. `examples/typescript/clients/axios`, and `cd` into that example. Add your private key for the account making payments into the `.env` file, and then run `pnpm dev` in that directory.
 
 You should see activity across both terminals, and the client terminal will display a weather report.
 
@@ -270,4 +397,18 @@ You should see activity across both terminals, and the client terminal will disp
 2. Install dependencies: `pnpm install`
 3. Run the unit tests: `pnpm test`
 
-This will run the unit tests for the x402 packages.
+This will run the unit tests for all Kaia x402 packages.
+
+### Testing Individual Packages
+
+```bash
+# Test core package
+cd typescript/packages/x402 && npm test
+
+# Test Express middleware
+cd typescript/packages/x402-express && npm test
+
+# Test other packages
+cd typescript/packages/x402-hono && npm test
+cd typescript/packages/x402-next && npm test
+```
